@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body onload="init()">
+    <h3>마우스를 이용해서 그림을 그려 보세요</h3>
+    <hr>
+    <canvas id="myCanvas" style="background-color: aliceblue;" width="400" height="300">
+    </canvas>
+    <table border="1">
+        <tr>
+            <td><input id="color" type="color" onchange="colors()"></td>
+            <td><input type="button" onclick="allEraser()" value="전체지우기"></td>
+            <td><input type="button" onclick="partEraser()" value="지우기"></td>
+            <td>
+                <select id="sizeUp" onclick="sizeUp()">
+                    <option value="10">10</option>
+                    <option value="5">5</option>
+                    <option value="2">2</option>
+                </select>
+            </td>
+        </tr>
+    </table>.
+    <div id="xy"></div>
+    <script>
+        var canvas,context;
+        function init(){
+            canvas = document.getElementById("myCanvas");
+            context = canvas.getContext("2d");
+
+            context.lineWidth = 2;
+            // context.strokeStyle = "black";
+
+            canvas.addEventListener("mousemove",function(e){move(e)},false);
+            canvas.addEventListener("mousedown",function(e){down(e)},false);
+            canvas.addEventListener("mouseup",function(e){up(e)},false);
+            canvas.addEventListener("mouseout",function(e){out(e)},false);
+        }
+
+        var startX=0, startY=0;
+        var dragging = false;
+        var isErase = false;
+        function sizeUp(){
+            var sizeUp = document.getElementById("sizeUp");
+            context.lineWidth = sizeUp.value;
+        }
+        //그림을 그리는 부분
+        function draw(curX,curY){
+            context.beginPath();
+            context.moveTo(startX,startY);
+            context.lineTo(curX,curY);
+            context.stroke();
+        }
+        //마우스를 눌렀을때
+        function down(e){
+            startX = e.offsetX;
+            startY = e.offsetY;
+            dragging = true;
+        }
+        //마우스를 뗐을때
+        function up(e){
+            dragging = false;
+        }
+        //마우스를 놓았을때
+        function move(e){
+            if(!dragging) return;
+            if(isErase){
+                context.clearRect(e.offsetX,e.offsetY,20,20);
+                return;
+            }
+            var curX = e.offsetX, curY = e.offsetY;
+            draw(curX,curY);
+            startX = curX; startY = curY;
+        }
+        //그림판 밖으로 나갔을때
+        function out(e){
+            dragging = false;
+            isErase=false;
+        }
+        function colors(){
+            context.strokeStyle = document.getElementById("color").value;
+            isErase=false;
+        }
+        function allEraser(){
+            context.clearRect(0,0,canvas.width,canvas.height);
+        }
+        function partEraser(){
+            isErase=true;
+        }
+    </script>
+</body>
+</html>
